@@ -84,7 +84,7 @@ if __name__ == "__main__":
     print("time :", last)
     
     start = time.process_time()
-    t, nbt = pls(d, ini, neighborhood, fulfill, elit = True, deci_m = dm),
+    t, nbt = pls(d, ini, neighborhood, fulfill, elit = True, deci_m = dm)
     last = time.process_time() - start
     print("best solution :", t.get_all_i()[-1][1:], "total answers :", nbt)
     print("time :", last)
