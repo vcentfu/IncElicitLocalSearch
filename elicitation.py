@@ -159,6 +159,8 @@ def elicitation(X, dm):
     Xc = X.copy()
     nbans = 0 
     mmrp = True
+    tmmr = [mmr(Xc, dm.pref)]
+    tans = [0]
     
     while len(Xc) > 1 and mmrp:
         a = r.randint(0, len(Xc) - 1)
@@ -182,8 +184,10 @@ def elicitation(X, dm):
             
         Xc = om_filter(Xc, dm.pref)
         print("elicitation : size :", len(Xc), "answ :", nbans, "mmr :", vmmr)
+        tmmr.append(vmmr)
+        tans.append(nbans)
         
-    return Xc, nbans
+    return Xc, nbans, tmmr, tans
             
         
 
