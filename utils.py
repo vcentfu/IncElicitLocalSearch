@@ -90,6 +90,7 @@ def neighborhood(d, bag, object_key = 'i', w_index = 0, bag_c = 'W'):
     
     """ dict[str:{int, list[int]}] * list[int] -> list[list[int]]
     
+        d : le dictionnaire contenant les données extraits.
         bag : Une liste d'indices des objets sélectionnés.
         
         Retourne le voisinage de bag par un échange 1-1. """
@@ -116,6 +117,7 @@ def fulfill(d, bags, i_obj, object_key = 'i', w_index = 0, bag_c = 'W'):
     
     """ dict[str:{int, list[int]}] * list[list[int]] * list[int] -> list[list[int]]
     
+        d : le dictionnaire contenant les données extraits.
         bags : La liste des listes d'indices des objets sélectionnés.
         
         Rempli les sacs à dos si possible. """
@@ -143,7 +145,12 @@ def fulfill(d, bags, i_obj, object_key = 'i', w_index = 0, bag_c = 'W'):
 
 def objective_values_w(d, bag, object_key = 'i', w_index = 0, bag_c = 'W'):
     
-    """ Retourne le poids du sac à dos avec ses valeurs objectives. """
+    """ dict[str:{int, list[int]}] * list[int] -> list[int] 
+    
+        d : le dictionnaire contenant les données extraits.
+        bag : Une liste d'indices des objets sélectionnés.
+    
+        Retourne le poids du sac à dos avec ses valeurs objectives. """
     
     res = np.zeros(len(d[object_key][0]))
     
@@ -151,59 +158,3 @@ def objective_values_w(d, bag, object_key = 'i', w_index = 0, bag_c = 'W'):
         res += np.array(d[object_key][ind])
         
     return res
-
-
-# TME précédent pour évaluer la performance de PLS
-
-
-def read_non_dominated_pts(path):
-    """ Returns non dominated points from inst with nb objects. """
-    
-    f = open('./' + path, 'r')
-    lines = f.readlines()
-    res = []
-    
-    for line in lines:
-        tline = line.split()
-        res.append((int(tline[0]), int(tline[1])))
-        
-    return set(res)
-            
-
-def convert_set(obags):
-    
-    res = [(k[1], k[2]) for k in obags]
-    
-    return set(res)
-
-
-def compute_P_YN(YN_t, YN):
-    """ Computes P_YN. """
-    
-    return len(set(YN_t) & set(YN)) / len(set(YN)) 
-
-
-def draw_pts(all_pts):
-    """ Draws all_pts into a graph. """
-    
-    _x = []
-    _y = []
-    
-    for x, y in all_pts:
-        _x.append(x)
-        _y.append(y)
-        
-    plt.xlim(25000, 100000)
-    plt.ylim(25000, 100000)
-    plt.scatter(_x, _y, marker ='+')
-    plt.grid()
-    plt.show()
-    
-    return
-        
-        
-    
-    
-
-
-

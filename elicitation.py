@@ -183,7 +183,7 @@ def elicitation(X, dm):
         Xc = om_filter(Xc, dm.pref)
         print("elicitation : size :", len(Xc), "answ :", nbans, "mmr :", vmmr)
         
-    return len(Xc), nbans
+    return Xc, nbans
             
         
 

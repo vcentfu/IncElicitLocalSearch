@@ -4,10 +4,10 @@ import numpy as np
 class QuadTree:
     def __init__(self, bag, i, binary = chr(ord('0') - 1), succ = [], flag = False):
         
-        """ list[int * list[int] * str * list[QuadTree]
+        """ list[int] * list[int] * str * list[QuadTree] * bool
         
-            object_id : L'identifiant de l'objet associé au noeud (typiquement l'indice dans la liste des objets).
-            i : La liste des caractéristiques de l'objet.
+            bag : La liste des objets sélectionnés associée au noeud (la liste d'indice).
+            i : La liste des caractéristiques de l'objet (poids du sac et les valeurs objectifs du sac).
             binary : La chaine de caractères binaires decrivant le succesorship (0 si l'objectif est <= à l'objectif du précédent, 1 sinon)
             succ : La liste des QuadTree fils.
             flag : Un booléen pour indiquer la suppression dans le cadre de l'algorithme quad-tree 2.
@@ -97,7 +97,7 @@ class QuadTree:
         
         """ list[int] -> str
         
-            i : La liste des caractéristiques de l'objet.
+            i : La liste des caractéristiques de l'objet (poids du sac et les valeurs des objectifs du sac).
         
             Retourne le binary de l'objet ayant comme caractéristiques i par rapport au noeud. """
             
@@ -161,7 +161,9 @@ class QuadTree:
     
     def discard(self, i):
         
-        """ -> bool
+        """ list[int] -> bool
+        
+            i : La liste des caractéristiques de l'objet (poids du sac et les valeurs des objectifs du sac).
             
             Retourne True si l'objet à tester n'est pas à ajouter. """
         
@@ -186,28 +188,28 @@ class QuadTree:
     
     def check_flag(self, i):
         
-        """ Effectue les marquages pour les suppressions (cf. quad-tree 2). """
+        """ list[int] -> 
+        
+            i : La liste des caractéristiques de l'objet (poids du sac et les valeurs des objectifs du sac).
+        
+            Effectue les marquages pour les suppressions (cf. quad-tree 2). """
         
         if self.computes_binary(i) == ('1' * (len(i) - 1)):
             self.flag = True
             
         for tree in self.succ:
             tree.check_flag(i)
-        
-        """
-        for tree in self.succ:
-            if tree.computes_binary(i) == ('0' * (len(i) - 1)):
-                tree.flag = True
-            
-            tree.check_flag(i)
-        """
     
     
     def get_to_insert(self, to_insert, new_root = False, b_root = True):
         
-        """ -> list[QuadTree]
+        """ list[QuadTree] * bool * bool -> bool
         
-        Recupère les noeuds non flagués à insérer. """
+            to_insert : La liste des QuadTree à insérer.
+            new_boot : booléen indiquant s'il y une nouvelle racine pour le QuadTree.
+            b_root : booléen indiquant si la fonction est appelée sur le noeud racine.
+        
+            Recupère les noeuds non flagués à insérer dans to_insert et retourne True s'il faut une nouvelle racine, False sinon. """
         
         if b_root:
             if self.flag:
@@ -227,8 +229,10 @@ class QuadTree:
         
     def remove_filter(self):
         
-        """ Supprime toutes les noeuds flagués. """
-        ''
+        """ ->
+        
+            Supprime toutes les noeuds flagués. """
+        
         succ = []
         
         for tree in self.succ:
@@ -242,10 +246,10 @@ class QuadTree:
     
     def insert_new(self, bag, i):
         
-        """ list[int] * list[int] 
+        """ list[int] * list[int] ->
         
-            object_id : L'identifiant de l'objet associé au noeud (typiquement l'indice dans la liste des objets).
-            i : La liste des caractéristiques de l'objet.
+            bag : La liste des objets sélectionnés associée au noeud (la liste d'indice).
+            i : La liste des caractéristiques de l'objet (poids du sac et les valeurs des objectifs du sac).
         
             Ajoute le nouveau objet dans l'arbre. """
         
@@ -265,7 +269,7 @@ class QuadTree:
     
     def insert(self, qt):
         
-        """ QuadTree
+        """ QuadTree ->
         
             qt : Un quad-tree à ajouter dans l'arbre.
         
@@ -323,21 +327,26 @@ class QuadTree:
         return True
 
 
-def test_dominance(li): # Pour vérifier que le Quadtree est bien un front de Pareto local
+def test_dominance(li):  # Pour vérifier que le Quadtree est bien un front de Pareto local
     
     """ list[list[int]] -> bool
     
+        li : La liste des valeurs objectifs des sacs.
+    
         Teste si li est un front de Pareto. """
     
-    def cb(i, i2):
+    def cb(i, i_b):
         
         """ list[int] * list[int] -> str
+        
+            i : valeurs objectifs d'un sac.
+            i_b : valeurs objectifs du second sac à comparer.
         
             Retourne le binary de i par rapport à i2. """
             
         binary = ''
         
-        for v, nv in zip(i[1:], i2[1:]):
+        for v, nv in zip(i[1:], i_b[1:]):
             if v <= nv:
                 binary += '0'
             else:
@@ -345,17 +354,15 @@ def test_dominance(li): # Pour vérifier que le Quadtree est bien un front de Pa
                 
         return binary
     
-    
     for i in range(len(li)):
-        for i2 in range(i + 1, len(li)):
-            if cb(li[i], li[i2]) == ('1' * (len(li[0]) - 1)) or cb(li[i], li[i2]) == ('0' * (len(li[0]) - 1)):
-                print(li[i], li[i2])
+        for i_b in range(i + 1, len(li)):
+            if cb(li[i], li[i_b]) == ('1' * (len(li[0]) - 1)) or cb(li[i], li[i_b]) == ('0' * (len(li[0]) - 1)):
+                print(li[i], li[i_b])
                 return True
             
     return False
     
             
-"""
 if __name__ == '__main__':
     t = QuadTree(0, np.random.randint(1, 101, 4))
 
@@ -367,7 +374,7 @@ if __name__ == '__main__':
             print(len(t.get_all_i()))
             print("non vérifié")
             break
-"""
+        
     
 
 
