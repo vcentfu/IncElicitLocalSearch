@@ -5,7 +5,7 @@ from elicitation import *
 from pl import *
 
 
-def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, verbose = False):
+def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, strategy = "RANDOM", verbose = False):
     
     """ dict[str:{int, list[int]}] * list[int] * function -> list[list[int]]
     
@@ -62,7 +62,7 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, v
                 
             X = [list(o[1:]) for o in res.get_all_i()]
             bX = res.get_all_bags()
-            best_sol, nbans, _, _ = elicitation(X, deci_m)
+            best_sol, nbans, _, _ = elicitation(X, deci_m, strategy = strategy)
             nbt += nbans
             indX = X.index(list(best_sol[-1]))
             p = [bX[indX]]
@@ -80,6 +80,7 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, v
 
 
 if __name__ == "__main__":
+    """
     print("Test PLS for 2KP100-TA-0.dat with 2 objectives & all objects")
     d = read_data("2KP100-TA-0.dat")
     d = cut_data(d, 100, 2)
@@ -90,18 +91,30 @@ if __name__ == "__main__":
     p = p_quality(yn_t, yn)
     print("proportion :", p)
     print("---------------------------")
+    """
     
-    print("Test PLS then elicitation for 2KP200-TA-0.dat with 3 objectives & 50 objects")
+    nb_obj = 10
+    nb_crit = 6
+    type_a = "OWA"
+    strategy = "CSS"
+    
+    print("Test PLS then %s elicitation for 2KP200-TA-0.dat with %d objectives & %d objects" % (type_a, nb_crit, nb_obj))   
     d = read_data("2KP200-TA-0.dat")
-    d = cut_data(d, 50, 3)
+    d = cut_data(d, nb_obj, nb_crit)
     ini = initial_bag(d)
     start = time.process_time()
-    t, nbt = pls(d, ini, neighborhood, fulfill)
+    t, nbt = pls(d, ini, neighborhood, fulfill, strategy = strategy)
     ob = [i[1:] for i in t.get_all_i()]
-    dm = decision_maker(omega_sum(3))
+    
+    if type_a == "LW":
+        om = omega_sum(nb_crit)
+    elif type_a == "OWA":
+        om = omega_owa(nb_crit)
+        
+    dm = decision_maker(om, type_a = type_a)
     print("initial size of choices:", len(ob))
     print("Start elicitation")
-    best_sol, nbans, tmmr, tans = elicitation(ob, dm)
+    best_sol, nbans, tmmr, tans = elicitation(ob, dm, strategy = strategy)
     print("best solution :", best_sol, "total answers :", nbans)
     #print("queries :", tans)
     #print("mmr list :", tmmr)
@@ -109,9 +122,9 @@ if __name__ == "__main__":
     print("time :", last)
     print("---------------------------")
     
-    print("Test incremental elicitation for 2KP200-TA-0.dat with 3 objectives 50 objects")
+    print("Test %s incremental elicitation for 2KP200-TA-0.dat with %d objectives %d objects" % (type_a, nb_crit, nb_obj))
     start = time.process_time()
-    t, nbt = pls(d, ini, neighborhood, fulfill, elit = True, deci_m = dm)
+    t, nbt = pls(d, ini, neighborhood, fulfill, elit = True, deci_m = dm, strategy = strategy)
     last = time.process_time() - start
     print("best solution :", t.get_all_i()[-1][1:], "total answers :", nbt)
     print("time :", last)
