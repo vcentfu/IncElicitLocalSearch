@@ -187,6 +187,10 @@ def elicitation(X, dm):
         tmmr.append(vmmr)
         tans.append(nbans)
         
+    if len(Xc) > 1:
+        nbans += len(Xc) - 1
+        Xc = [Xc[np.argmax([np.sum(x * dm.omega) for x in Xc])]]
+        
     return Xc, nbans, tmmr, tans
             
         

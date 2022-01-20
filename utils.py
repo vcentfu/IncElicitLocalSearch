@@ -33,6 +33,40 @@ def read_data(path, keys = ['n', 'i', 'W'], types = ['i', 'l', 'i']):
                     d[key].append(list(map(int, sline[1:])))
     
     return d
+
+
+def read_eff(path):
+    
+    """ str -> list[list[int]]
+    
+        path : le nom du fichier eff à lire.
+        
+        Retourne la liste des points non dominées. """
+        
+    f = open("./" + path)
+    lines = f.readlines()
+    res = []
+    
+    for line in lines:
+        tline = line.split()
+        res.append(list(map(int, tline)))
+        
+    return res
+
+
+def p_quality(yn_t, yn):
+    
+    """ list[list[int]] * list[list[int]] -> float
+        
+        yn_t : une approximation des points non-dominés. 
+        yn : l'ensemble des points non-dominés.
+        
+        Retourne la proportion des points approximés intersectant les points non dominés. """
+
+    tyn_t = list(map(tuple, yn_t))
+    tyn = list(map(tuple, yn))
+    
+    return len(set(tyn_t) & set(tyn)) / len(set(tyn))
         
 
 def cut_data(d, n, p, object_key = 'i', weight_bag = 'W'):
@@ -57,7 +91,11 @@ def cut_data(d, n, p, object_key = 'i', weight_bag = 'W'):
         t.append(d[object_key][i][:p + 1])
     
     res[object_key] = t
-    res[weight_bag] = sum([res[object_key][i][0] for i in range(len(res[object_key]))]) / 2
+    
+    if len(d[object_key]) != n:
+        res[weight_bag] = sum([res[object_key][i][0] for i in range(len(res[object_key]))]) / 2
+    else:
+        res[weight_bag] = d[weight_bag]
     
     return res
 

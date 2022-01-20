@@ -364,16 +364,22 @@ def test_dominance(li):  # Pour vérifier que le Quadtree est bien un front de P
     
             
 if __name__ == '__main__':
-    t = QuadTree(0, np.random.randint(1, 101, 4))
+    print("Test QuadTree for 1000 alternatives")
+    t = QuadTree(0, np.random.randint(1, 101, 5))
+    verif = True
 
-
-    for i in range(1, 5001):
-        t.add(i, np.random.randint(1, 101, 4))
-        print(i)
+    for i in range(1, 1001):
+        t.add(i, np.random.randint(1, 101, 5))
+        print("i =", i)
+        
         if test_dominance(t.get_all_i()):
             print(len(t.get_all_i()))
             print("non vérifié")
+            verif = False
             break
+    
+    if verif:
+        print("QuadTree fonctionne sans erreur de calculs.")
         
     
 

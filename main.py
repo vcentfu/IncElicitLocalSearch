@@ -20,8 +20,8 @@ def draw_graph_mmr(file_name, nb_obj, nb_crit, color = None, show = False):
     d = read_data(file_name)
     d = cut_data(d, nb_obj, nb_crit)
     ini = initial_bag(d)
-    t, nbt = pls(d, ini, neighborhood, fulfill)
-    ob = [o[1:] for o in t.get_all_i()]
+    t, nbt = pls(d, ini, neighborhood, fulfill, verbose = True)
+    ob = [i[1:] for i in t.get_all_i()]
     dm = decision_maker(omega_sum(nb_crit))
     print("initial size of choices:", len(ob))
     best_sol, nbans, tmmr, tans = elicitation(ob, dm)
@@ -53,6 +53,7 @@ if __name__ == "__main__":
    
     for arg, color in zip(args, colors):
         nb_obj, nb_crit = arg
+        print("launch")
         p = multiprocessing.Process(target = draw_graph_mmr, args = ("2KP200-TA-0.dat", nb_obj, nb_crit, color))
         proc.append(p)
         p.start()
@@ -67,7 +68,7 @@ if __name__ == "__main__":
     draw_graph_mmr("2KP200-TA-0.dat", 50, 5)
     draw_graph_mmr("2KP200-TA-0.dat", 100, 5, show = True)
     """
-    plt.savefig("output.png")
+    plt.savefig("mmr_graph.png")
     plt.show()
     
 
