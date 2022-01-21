@@ -2,7 +2,7 @@ from tree import *
 from utils import *
 import time
 from elicitation import *
-from pl import *
+from solution import *
 
 
 def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, strategy = "RANDOM", verbose = False):
@@ -26,7 +26,7 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
     nbt = 0
         
     while len(p) != 0 or elit:
-        if verbose:
+        if verbose and not elit:
             print("remaining exploration :", len(p))
         else:
             print(".", end = "")
@@ -58,11 +58,13 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
         p = nn
         
         if elit :
-            print()
-                
             X = [list(o[1:]) for o in res.get_all_i()]
             bX = res.get_all_bags()
-            best_sol, nbans, _, _ = elicitation(X, deci_m, strategy = strategy)
+        
+            if verbose:
+                print()
+            
+            best_sol, nbans, _, _ = elicitation(X, deci_m, strategy = strategy, verbose = verbose)
             nbt += nbans
             indX = X.index(list(best_sol[-1]))
             p = [bX[indX]]
@@ -73,14 +75,10 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
             else:
                 sol_c = list(best_sol[-1])
     
-    if not verbose and not elit:
-        print()
-        
     return res, nbt
 
 
 if __name__ == "__main__":
-    """
     print("Test PLS for 2KP100-TA-0.dat with 2 objectives & all objects")
     d = read_data("2KP100-TA-0.dat")
     d = cut_data(d, 100, 2)
@@ -89,21 +87,25 @@ if __name__ == "__main__":
     t, _ = pls(d, ini, neighborhood, fulfill, verbose = True)
     yn_t = [i[1:] for i in t.get_all_i()]
     p = p_quality(yn_t, yn)
-    print("proportion :", p)
+    print("proportion eff:", p)
     print("---------------------------")
-    """
     
-    nb_obj = 10
-    nb_crit = 6
+    nb_items = 50
+    nb_crit = 3
     type_a = "OWA"
     strategy = "CSS"
+    verbose = True
     
-    print("Test PLS then %s elicitation for 2KP200-TA-0.dat with %d objectives & %d objects" % (type_a, nb_crit, nb_obj))   
+    print("Test PLS then %s elicitation for 2KP200-TA-0.dat with %d objectives & %d objects" % (type_a, nb_crit, nb_items))   
     d = read_data("2KP200-TA-0.dat")
-    d = cut_data(d, nb_obj, nb_crit)
+    d = cut_data(d, nb_items, nb_crit)
     ini = initial_bag(d)
     start = time.process_time()
-    t, nbt = pls(d, ini, neighborhood, fulfill, strategy = strategy)
+    t, nbt = pls(d, ini, neighborhood, fulfill, strategy = strategy, verbose = verbose)
+    
+    if not verbose:
+        print()
+    
     ob = [i[1:] for i in t.get_all_i()]
     
     if type_a == "LW":
@@ -113,8 +115,12 @@ if __name__ == "__main__":
         
     dm = decision_maker(om, type_a = type_a)
     print("initial size of choices:", len(ob))
-    print("Start elicitation")
-    best_sol, nbans, tmmr, tans = elicitation(ob, dm, strategy = strategy)
+    print("start elicitation")
+    best_sol, nbans, tmmr, tans = elicitation(ob, dm, strategy = strategy, verbose = verbose)
+    
+    if not verbose:
+        print()
+    
     print("best solution :", best_sol, "total answers :", nbans)
     #print("queries :", tans)
     #print("mmr list :", tmmr)
@@ -122,9 +128,12 @@ if __name__ == "__main__":
     print("time :", last)
     print("---------------------------")
     
-    print("Test %s incremental elicitation for 2KP200-TA-0.dat with %d objectives %d objects" % (type_a, nb_crit, nb_obj))
+    print("Test %s incremental elicitation for 2KP200-TA-0.dat with %d objectives %d objects" % (type_a, nb_crit, nb_items))
     start = time.process_time()
-    t, nbt = pls(d, ini, neighborhood, fulfill, elit = True, deci_m = dm, strategy = strategy)
+    t, nbt = pls(d, ini, neighborhood, fulfill, elit = True, deci_m = dm, strategy = strategy, verbose = verbose)
+    
+    print()
+    
     last = time.process_time() - start
     print("best solution :", t.get_all_i()[-1][1:], "total answers :", nbt)
     print("time :", last)

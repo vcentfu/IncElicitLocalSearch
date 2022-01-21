@@ -54,7 +54,7 @@ class decision_maker:
         self.pref = []
         self.type_a = type_a
         
-    def choose(self, x, y):
+    def choose(self, x, y, verbose = False):
         
         """ list[int] * list[int] * list[float] -> bool
         
@@ -66,7 +66,8 @@ class decision_maker:
         h = [list(map(list, p)) for p in self.pref]
         
         if [list(x), list(y)] in h or [list(y), list(x)] in h:
-            print("Question already asked")
+            if verbose:
+                print("Question already asked")
             return -1
         
         if self.type_a == "LW":
@@ -95,6 +96,7 @@ def pmr(x, y, pref, type_a = "LW"):
         
     m = gp.Model("PMR")
     m.setParam(GRB.Param.OutputFlag, 0)
+    m.setParam(GRB.Param.LogToConsole, 0)
     w = []
     
     for i in range(len(x)):
@@ -160,6 +162,7 @@ def om_dominance(y, X, pref, type_a = "LW"):
         
     m = gp.Model("Omega-dominance")
     m.setParam(GRB.Param.OutputFlag, 0)
+    m.setParam(GRB.Param.LogToConsole, 0)
     w = []
     
     for i in range(len(y)):
@@ -219,7 +222,7 @@ def om_filter(X, pref, type_a = "LW"):
     return res
 
 
-def elicitation(X, dm, strategy = "RANDOM"):
+def elicitation(X, dm, strategy = "RANDOM", verbose = False):
     
     """ list[list[int]] * decision maker -> 
     
@@ -244,7 +247,7 @@ def elicitation(X, dm, strategy = "RANDOM"):
             b = qu[a]
             
         nbans += 1
-        ans = dm.choose(Xc[a], Xc[b]) 
+        ans = dm.choose(Xc[a], Xc[b], verbose = verbose) 
         
         if ans:
             Xc = Xc[:b] + Xc[b + 1:]
@@ -258,9 +261,12 @@ def elicitation(X, dm, strategy = "RANDOM"):
         
         if vmmr <= 0:
             mmrp = False
+        
+        if verbose:     
+            print("elicitation : size :", len(Xc), "answ :", nbans, "mmr :", vmmr)
+        else:
+            print("+", end = "")
             
-        print("elicitation : size :", len(Xc), "answ :", nbans, "mmr :", vmmr)
-        tmmr.append(vmmr)
         tans.append(nbans)
         
     if len(Xc) > 1:

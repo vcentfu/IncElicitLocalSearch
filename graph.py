@@ -2,23 +2,23 @@ from utils import *
 from tree import *
 from pls import *
 from elicitation import *
-from pl import *
+from solution import *
 import numpy as np
 import matplotlib.pyplot as plt
 import multiprocessing  
 
 
-def draw_graph_mmr(file_name, nb_obj, nb_crit, value, color = None, show = False):
+def draw_graph_mmr(file_name, nb_items, nb_crit, value, color = None, show = False):
     
     """ str * int * int * manager.dict() ->
     
-        nb_obj : le nombre d'objets sélectionnés.
+        nb_items : le nombre d'objets sélectionnés.
         nb_crit : le nombre de critères.
         
-        Dessine le graphe mmr en fonction du nombre de questions pour nb_obj objets et nb_crit critères. """
+        Dessine le graphe mmr en fonction du nombre de questions pour nb_items objets et nb_crit critères. """
         
     d = read_data(file_name)
-    d = cut_data(d, nb_obj, nb_crit)
+    d = cut_data(d, nb_items, nb_crit)
     ini = initial_bag(d)
     t, nbt = pls(d, ini, neighborhood, fulfill, verbose = True)
     ob = [i[1:] for i in t.get_all_i()]
@@ -27,9 +27,9 @@ def draw_graph_mmr(file_name, nb_obj, nb_crit, value, color = None, show = False
     best_sol, nbans, tmmr, tans = elicitation(ob, dm, strategy = "RANDOM")
     mmr_max = np.max(tmmr)
     
-    value["%d_%d" % (nb_obj, nb_crit)] = tans, np.array(tmmr) / mmr_max, mmr_max, nb_obj, nb_crit
+    value["%d_%d" % (nb_items, nb_crit)] = tans, np.array(tmmr) / mmr_max, mmr_max, nb_items, nb_crit
     
-    return tans, np.array(tmmr) / mmr_max, mmr_max, nb_obj, nb_crit
+    return tans, np.array(tmmr) / mmr_max, mmr_max, nb_items, nb_crit
 
 
 if __name__ == "__main__": 
@@ -40,9 +40,9 @@ if __name__ == "__main__":
     d = manager.dict()
    
     for arg, color in zip(args, colors):
-        nb_obj, nb_crit = arg
+        nb_items, nb_crit = arg
         print("launch multiprocessing graph.py")
-        p = multiprocessing.Process(target = draw_graph_mmr, args = ("2KP200-TA-0.dat", nb_obj, nb_crit, d, color, True))
+        p = multiprocessing.Process(target = draw_graph_mmr, args = ("2KP200-TA-0.dat", nb_items, nb_crit, d, color, True))
         proc.append(p)
         p.start()
         
@@ -51,8 +51,8 @@ if __name__ == "__main__":
         
     plt.figure(figsize = (12, 10))
     
-    for tans, tmmr, mmr_max, nb_obj, nb_crit in d.values():
-        plt.plot(tans, tmmr, "o-", label = "max mmr = %.2f, nb obj = %d, nb crit = %d" % (mmr_max, nb_obj, nb_crit))
+    for tans, tmmr, mmr_max, nb_items, nb_crit in d.values():
+        plt.plot(tans, tmmr, "o-", label = "max mmr = %.2f, nb obj = %d, nb crit = %d" % (mmr_max, nb_items, nb_crit))
     
     plt.legend()
     plt.grid()

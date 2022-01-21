@@ -2,24 +2,24 @@ from utils import *
 from tree import *
 from pls import *
 from elicitation import *
-from pl import *
+from solution import *
 import numpy as np
 import matplotlib.pyplot as plt
 import multiprocessing
 
 
-def experiment(nb_obj, nb_crit, strategy = "RANDOM", type_a = "LW"):
+def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW"):
     
     """ int * int * str -> 
     
-        nb_obj : le nombre d'objets sélectionnés.
+        nb_items : le nombre d'objets sélectionnés.
         nb_crit : le nombre de critères.
         type_a : type d'agrégateur utilisé : "LW", "OWA", "CHOQ".
         
         Retourne les résultats pour 20 jeux de poids. """
 
     d = read_data("2KP200-TA-0.dat")
-    d = cut_data(d, nb_obj, nb_crit)
+    d = cut_data(d, nb_items, nb_crit)
     tps = [0, 0]
     anst = [0, 0]
     gap = [0, 0]   
@@ -58,10 +58,10 @@ def experiment(nb_obj, nb_crit, strategy = "RANDOM", type_a = "LW"):
         
         if type_a == "LW":
             gap[1] = gap[1] + np.abs(np.sum(np.array(om) * t.get_all_i()[-1][1:]) - np.sum(np.array(om) * np.array(tv))) / np.sum(np.array(om) * np.array(tv))
-        else:
+        elif type_a == "OWA":
             gap[1] = gap[1] + np.abs(np.sum(np.array(om) * np.sort(t.get_all_i()[-1][1:])) - np.sum(np.array(om) * np.sort(np.array(tv)))) / np.sum(np.array(om) * np.sort(np.array(tv)))
     
-    sob = str(nb_obj)
+    sob = str(nb_items)
     
     if len(sob) < 3:
         while len(sob) < 3:
@@ -81,18 +81,18 @@ if __name__ == '__main__':
     proc = []
     args = [(50, 2), (50, 3), (50, 4), (50, 5), (50, 6), (100, 2), (100, 3), (100, 4), (100, 5), (100, 6)]
     for arg in args:
-        nb_obj, nb_crit = arg
+        nb_items, nb_crit = arg
         print("launch multiprocessing results.py")
-        p = multiprocessing.Process(target = experiment, args = (nb_obj, nb_crit, "RANDOM", "LW",))
+        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "RANDOM", "LW",))
         proc.append(p)
         p.start()
-        p = multiprocessing.Process(target = experiment, args = (nb_obj, nb_crit, "RANDOM", "OWA"))
+        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "RANDOM", "OWA"))
         proc.append(p)
         p.start()
-        p = multiprocessing.Process(target = experiment, args = (nb_obj, nb_crit, "CSS", "LW",))
+        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "CSS", "LW",))
         proc.append(p)
         p.start()
-        p = multiprocessing.Process(target = experiment, args = (nb_obj, nb_crit, "CSS", "OWA"))
+        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "CSS", "OWA"))
         proc.append(p)
         p.start()
         
