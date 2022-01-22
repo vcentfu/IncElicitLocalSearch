@@ -27,7 +27,7 @@ Pour les paramètres du problème suivants :
 • 4 critères  
 • à élicitation finale (élicitation uniquement sur le dernier front de Pareto obtenu par PLS)  
 • avec agrégateur d'intégral de Choquet  
-• avec une stratégie de questionnement de solution courante (Current Solution Strategy)  
+• avec une stratégie de questionnement de solution courante (*Current Solution Strategy*)  
 • pas d'affichage détaillé sur terminal du progression des résultats  
 • pas d'affichage graphique des solutions  
   
