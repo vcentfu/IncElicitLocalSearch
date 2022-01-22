@@ -9,7 +9,7 @@ La fonction principale permettant de tester les programmes se situe dans le fich
 Pour tester les différents modèles, voici quelques exemples :  
 Pour les paramètres du problème suivants :  
 • 20 (premiers) objets  
-• 3 critères
+• 3 critères  
 • à élicitation incrémentale  
 • avec agrégateur de somme pondérée  
 • avec une stratégie de questionnement aléatoire  
@@ -24,7 +24,7 @@ python main.py --nb_items 20 --nb_criteria 3 --elicitation 1 --aggregator LW --s
   
 Pour les paramètres du problème suivants :  
 • 50 (premiers) objets  
-• 4 critères
+• 4 critères  
 • à élicitation finale (élicitation uniquement sur le dernier front de Pareto obtenu par PLS)  
 • avec agrégateur d'intégral de Choquet  
 • avec une stratégie de questionnement de solution courante (Current Solution Strategy)  
@@ -37,7 +37,7 @@ Veuillez entrer sur le terminal :
 python main.py --nb_items 50 --nb_criteria 4 --elicitation 0 --aggregator CHOQ --strategy CSS --verbose 0 --render 0
 ```  
   
-Pour plus de détails sur les arguments (notament sur les agrégateurs possibles), veuillez entrer sur le terminal:  
+Pour plus de détails sur les arguments (notamment sur les agrégateurs possibles), veuillez entrer sur le terminal:  
   
 ```
 python main.py --help
