@@ -3,9 +3,11 @@ from utils import *
 import time
 from elicitation import *
 from solution import *
+from visualization import *
+from mpl_toolkits.mplot3d import Axes3D
 
 
-def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, strategy = "RANDOM", verbose = False):
+def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, strategy = "RANDOM", verbose = False, render = False, render_stop = True):
     
     """ dict[str:{int, list[int]}] * list[int] * function -> list[list[int]]
     
@@ -18,12 +20,17 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
     
         Retourne les solutions Pareto-optimale par PLS. """
     
+    if render:
+        plt.show(block = False)
+        plt.pause(0.001)
+    
     p = [initial_bag]
     ini_o = objective_values_w(d, initial_bag)
     res = QuadTree(initial_bag, ini_o)
     sol_c = ini_o[1:]
     best_sol = None
     nbt = 0
+    max_pts = objective_values_w(d, [i for i in range(len(d["i"]))])[1:]
         
     while len(p) != 0 or elit:
         if verbose and not elit:
@@ -58,7 +65,11 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
         p = nn
         
         if elit :
-            X = [list(o[1:]) for o in res.get_all_i()]
+            X = [list(i[1:]) for i in res.get_all_i()]
+            
+            if render:
+                vizualize(X, max_pts, color = '#ff7f0e', clear = False)
+            
             bX = res.get_all_bags()
         
             if verbose:
@@ -74,17 +85,35 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
                 break
             else:
                 sol_c = list(best_sol[-1])
+        
+        if render:
+            pts = [list(i[1:]) for i in res.get_all_i()]
+            vizualize(pts, max_pts, color = '#1f77b4')            
+        
+    if render:
+        if elit:
+            vizualize(X, max_pts, color = '#ff7f0e', clear = True)
+            vizualize(pts, max_pts, color = '#1f77b4', clear = False) 
+        
+        if not verbose:
+            print()
+        
+        print("End of exploration")
+        
+        if render_stop:
+            print("Please close window to continue ...")
+            plt.show()
     
     return res, nbt
 
 
 if __name__ == "__main__":
-    print("Test PLS for 2KP100-TA-0.dat with 2 objectives & all objects")
+    print("Test PLS for 2KP100-TA-0.dat with 2 objectives & all items")
     d = read_data("2KP100-TA-0.dat")
     d = cut_data(d, 100, 2)
     yn = read_eff("2KP100-TA-0.eff")
     ini = initial_bag(d)
-    t, _ = pls(d, ini, neighborhood, fulfill, verbose = True)
+    t, _ = pls(d, ini, neighborhood, fulfill, verbose = True, render = True)
     yn_t = [i[1:] for i in t.get_all_i()]
     p = p_quality(yn_t, yn)
     print("proportion eff:", p)
@@ -92,16 +121,17 @@ if __name__ == "__main__":
     
     nb_items = 50
     nb_crit = 3
-    type_a = "OWA"
+    type_a = "CHOQ"
     strategy = "CSS"
     verbose = True
+    render = False
     
-    print("Test PLS then %s elicitation for 2KP200-TA-0.dat with %d objectives & %d objects" % (type_a, nb_crit, nb_items))   
+    print("Test PLS then %s elicitation for 2KP200-TA-0.dat with %d objectives & %d items" % (type_a, nb_crit, nb_items))   
     d = read_data("2KP200-TA-0.dat")
     d = cut_data(d, nb_items, nb_crit)
     ini = initial_bag(d)
     start = time.process_time()
-    t, nbt = pls(d, ini, neighborhood, fulfill, strategy = strategy, verbose = verbose)
+    t, nbt = pls(d, ini, neighborhood, fulfill, strategy = strategy, verbose = verbose, render = render, render_stop = False)
     
     if not verbose:
         print()
@@ -112,11 +142,18 @@ if __name__ == "__main__":
         om = omega_sum(nb_crit)
     elif type_a == "OWA":
         om = omega_owa(nb_crit)
+    elif type_a == "CHOQ":
+        om = v_choquet(nb_crit)
         
     dm = decision_maker(om, type_a = type_a)
     print("initial size of choices:", len(ob))
     print("start elicitation")
     best_sol, nbans, tmmr, tans = elicitation(ob, dm, strategy = strategy, verbose = verbose)
+    last = time.process_time() - start
+    
+    if render:
+        vizualize(best_sol, objective_values_w(d, [i for i in range(len(d["i"]))])[1:], '#2ca02c', clear = False)
+        plt.show()
     
     if not verbose:
         print()
@@ -124,13 +161,12 @@ if __name__ == "__main__":
     print("best solution :", best_sol, "total answers :", nbans)
     #print("queries :", tans)
     #print("mmr list :", tmmr)
-    last = time.process_time() - start
     print("time :", last)
     print("---------------------------")
     
-    print("Test %s incremental elicitation for 2KP200-TA-0.dat with %d objectives %d objects" % (type_a, nb_crit, nb_items))
+    print("Test %s incremental elicitation for 2KP200-TA-0.dat with %d objectives %d items" % (type_a, nb_crit, nb_items))
     start = time.process_time()
-    t, nbt = pls(d, ini, neighborhood, fulfill, elit = True, deci_m = dm, strategy = strategy, verbose = verbose)
+    t, nbt = pls(d, ini, neighborhood, fulfill, elit = True, deci_m = dm, strategy = strategy, verbose = verbose, render = render)
     
     print()
     
