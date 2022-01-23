@@ -48,16 +48,20 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
             tv_bags += v_bags
             to_bags += o_bags
         
-        ln = QuadTree(tv_bags[0], to_bags[0])
-        
-        for sbag, obag in zip(tv_bags[1:], to_bags[1:]):
-            ln.add(sbag, obag)
-                
-        pn = ln.get_all_bags()
-        po = ln.get_all_i()
         
         nn = []
-            
+        po = []
+        pn = []
+        
+        if len(tv_bags) != 0:
+            ln = QuadTree(tv_bags[0], to_bags[0])
+        
+            for sbag, obag in zip(tv_bags[1:], to_bags[1:]):
+                ln.add(sbag, obag)
+                
+            pn = ln.get_all_bags()
+            po = ln.get_all_i()
+
         for sbag, obag in zip(pn, po):
             if res.add(sbag, obag):
                 nn.append(sbag)
@@ -108,7 +112,6 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
 
 
 if __name__ == "__main__":
-    """
     print("Test PLS for 2KP100-TA-0.dat with 2 objectives & all items")
     d = read_data("2KP100-TA-0.dat")
     d = cut_data(d, 100, 2)
@@ -119,13 +122,13 @@ if __name__ == "__main__":
     p = p_quality(yn_t, yn)
     print("proportion eff:", p)
     print("---------------------------")
-    """
-    nb_items = 25
-    nb_crit = 6
+    
+    nb_items = 20
+    nb_crit = 3
     type_a = "LW"
-    strategy = "CSS"
+    strategy = "RANDOM"
     verbose = True
-    render = False
+    render = True 
     
     print("Test PLS then %s elicitation for 2KP200-TA-0.dat with %d objectives & %d items" % (type_a, nb_crit, nb_items))   
     d = read_data("2KP200-TA-0.dat")
