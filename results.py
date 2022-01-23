@@ -6,6 +6,8 @@ from solution import *
 import numpy as np
 import matplotlib.pyplot as plt
 import multiprocessing
+import time
+import numpy as np
 
 
 def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times = 20):
@@ -76,8 +78,8 @@ def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times
     tps, anst, gap = np.array(tps) / test_times, np.array(anst) / test_times, np.array(gap) / test_times
     file_name = "./logs/" + type_a + "_" + strategy + "_" + sob + "_N" + str(nb_crit) + ".log"
     f = open(file_name, "a")
-    f.write("c %2.d %5.2f %4.1f %3.3f\n" % (test_times, tps[0], anst[0], gap[0]))
-    f.write("e %2.d %5.2f %4.1f %3.3f\n" % (test_times, tps[1], anst[1], gap[1]))
+    f.write("c {0:2d} {1:7.2f} {2:4.1f} {3:4.3f}\n".format(test_times, tps[0], anst[0], gap[0]))
+    f.write("e {0:2d} {1:7.2f} {2:4.1f} {3:4.3f}\n".format(test_times, tps[1], anst[1], gap[1]))
     f.close()
     
     print()
@@ -88,8 +90,9 @@ def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times
 
 if __name__ == '__main__':
     proc = []
-    args = [(20, 2), (20, 3), (20, 4), (20, 5), (20, 6), (30, 2), (30, 3), (30, 4), (30, 5), (30, 6)]
+    args = [(25, 2), (25, 3), (25, 4), (25, 5), (25, 6), (50, 2), (50, 3), (50, 4), (50, 5), (50, 6)]
     test_times = 20
+    timeout = 10 * 60 * 60
     
     for arg in args:
         nb_items, nb_crit = arg
@@ -118,6 +121,25 @@ if __name__ == '__main__':
         proc.append(p)
         p.start()
         
+    start = time.time()
+    bool_list =[True] * (len(args) * 6)
+    
+    while time.time() - start <= timeout:
+        for i in range(len(bool_list)):
+            bool_list[i] = proc[i].is_alive()
+            
+        if not np.any(bool_list):
+            break
+    else:
+        print("timeout, end all processes")
+        
+        for pro in proc:
+            pro.terminate()
+        
     for pro in proc:
-        pro.join(60 * 30 * 20)
+        pro.join()
+        
+    
+        
+    
         

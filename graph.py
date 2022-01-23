@@ -28,7 +28,8 @@ def draw_graph_mmr(file_name, nb_items, nb_crit, value, color = None):
     
     value["%d_%d" % (nb_items, nb_crit)] = tans, np.array(tmmr) / mmr_max, mmr_max, nb_items, nb_crit
     
-    print(" Process ended for %d items %d criteria" % (nb_items, nb_crit))
+    print()
+    print("Process ended for %d items %d criteria" % (nb_items, nb_crit))
     
     return tans, np.array(tmmr) / mmr_max, mmr_max, nb_items, nb_crit
 

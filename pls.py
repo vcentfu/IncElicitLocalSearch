@@ -101,13 +101,14 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
         print("End of exploration")
         
         if render_stop:
-            print("Please close window to continue ...")
+            print("Please close plot window to continue ...")
             plt.show()
     
     return res, nbt
 
 
 if __name__ == "__main__":
+    """
     print("Test PLS for 2KP100-TA-0.dat with 2 objectives & all items")
     d = read_data("2KP100-TA-0.dat")
     d = cut_data(d, 100, 2)
@@ -118,10 +119,10 @@ if __name__ == "__main__":
     p = p_quality(yn_t, yn)
     print("proportion eff:", p)
     print("---------------------------")
-    
-    nb_items = 50
-    nb_crit = 3
-    type_a = "CHOQ"
+    """
+    nb_items = 25
+    nb_crit = 6
+    type_a = "LW"
     strategy = "CSS"
     verbose = True
     render = False
@@ -130,13 +131,6 @@ if __name__ == "__main__":
     d = read_data("2KP200-TA-0.dat")
     d = cut_data(d, nb_items, nb_crit)
     ini = initial_bag(d)
-    start = time.process_time()
-    t, nbt = pls(d, ini, neighborhood, fulfill, strategy = strategy, verbose = verbose, render = render, render_stop = False)
-    
-    if not verbose:
-        print()
-    
-    ob = [i[1:] for i in t.get_all_i()]
     
     if type_a == "LW":
         om = omega_sum(nb_crit)
@@ -146,6 +140,15 @@ if __name__ == "__main__":
         om = v_choquet(nb_crit)
         
     dm = decision_maker(om, type_a = type_a)
+    start = time.process_time()
+    
+    t, nbt = pls(d, ini, neighborhood, fulfill, strategy = strategy, verbose = verbose, render = render, render_stop = False)
+    
+    if not verbose:
+        print()
+    
+    ob = [i[1:] for i in t.get_all_i()]
+    
     print("initial size of choices:", len(ob))
     print("start elicitation")
     best_sol, nbans, tmmr, tans = elicitation(ob, dm, strategy = strategy, verbose = verbose)
@@ -159,10 +162,9 @@ if __name__ == "__main__":
         print()
     
     print("best solution :", best_sol, "total answers :", nbans)
-    #print("queries :", tans)
-    #print("mmr list :", tmmr)
     print("time :", last)
     print("---------------------------")
+    
     
     print("Test %s incremental elicitation for 2KP200-TA-0.dat with %d objectives %d items" % (type_a, nb_crit, nb_items))
     start = time.process_time()

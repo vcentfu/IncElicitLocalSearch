@@ -69,7 +69,7 @@ def p_quality(yn_t, yn):
     return len(set(tyn_t) & set(tyn)) / len(set(tyn))
         
 
-def cut_data(d, n, p, items_key = 'i', weight_bag = 'W'):
+def cut_data(d, n, p, items_key = 'i', weight_bag = 'W', size_key = 'n'):
     
     """ dict[str:{int, list[int]}] * int -> dict[str:{int, list[int]}]
     
@@ -81,17 +81,19 @@ def cut_data(d, n, p, items_key = 'i', weight_bag = 'W'):
         Retourne le dictionnaire avec les n premiers objets et p objectifs. """
         
     res = dict()
+    res[size_key] = n
     
     for key in d:
         res[key] = d[key]
-        
+    
+    res[size_key] = n
     t = []
     
     for i in range(n):
         t.append(d[items_key][i][:p + 1])
     
     res[items_key] = t
-    
+   
     if len(d[items_key]) != n:
         res[weight_bag] = sum([res[items_key][i][0] for i in range(len(res[items_key]))]) / 2
     else:

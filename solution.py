@@ -23,7 +23,6 @@ def true_sol(d, dm, items_key = 'i', weight_bag = 'W'):
     m = gp.Model("exact", env = env)
     m.setParam(GRB.Param.OutputFlag, 0)
     m.setParam(GRB.Param.LogToConsole, 0)
-    m.setParam(GRB.Param.IntFeasTol, 1e-09)
     
     x = []
     
@@ -76,13 +75,6 @@ def true_sol(d, dm, items_key = 'i', weight_bag = 'W'):
             m.addConstr(sum([vd[a] for a in vd if i + 1 in set(a)]) <= o[i], "choq_%d" % (i + 1))
             
     m.optimize()
-    
-    """
-    print("tf =", m.ObjVal)
-    print(y)
-    print(M)
-    print(b)
-    """
     
     return [v.getValue() for v in o]
 

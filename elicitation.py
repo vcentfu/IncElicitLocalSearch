@@ -4,6 +4,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import sys, os
 from itertools import *
+import sys
  
 
 stdout = sys.stdout
@@ -58,19 +59,47 @@ def v_choquet(nb_crit):
         
         Retourne une fonction de choquet super-modulaire. """
     
-    def g_choquet(nb_crit):
+    def g_choquet(nb_crit, max_lim = sys.maxsize):
         v = dict()
         v[()] = 0
-        val = 0
         
         for i in range(1, nb_crit + 1):
             for arg in list(combinations([j + 1 for j in range(nb_crit)], i)): 
                 if len(arg) == nb_crit:
-                    v[arg] = 1
+                    v[arg] = max_lim * nb_crit
                 else:
-                    v[arg] = r.uniform(max([v[k] for j in range(len(arg)) for k in list(combinations(arg, j))]), 1)
+                    v[arg] = r.randint(max([v[k] for j in range(len(arg)) for k in list(combinations(arg, j))]), max_lim * nb_crit)
                     
         return v
+    
+    
+    def convex(v):
+        i = 0
+        keys = list(v.keys())
+        
+        while i < len(keys):
+            j = 0
+            
+            while j < len(keys):
+                union = tuple(sorted(list(set(keys[i]) | set(keys[j]))))
+                inter = tuple(sorted(list(set(keys[i]) & set(keys[j]))))
+                
+                if v[union] + v[inter] < v[keys[i]] + v[keys[j]]:
+                    if union != tuple() and inter != tuple():
+                        v[union] = v[union] + int((v[keys[i]] + v[keys[j]] - v[union] + v[inter]) / 2) + 1 
+                        v[inter] = v[inter] + (v[keys[i]] + v[keys[j]] - v[union] + v[inter]) / 2
+                    else:
+                        if union == tuple():
+                            v[inter] = v[inter] + int((v[keys[i]] + v[keys[j]] - v[union] + v[inter])) + 1
+                        else:
+                            v[union] = v[union] + (v[keys[i]] + v[keys[j]] - v[union] + v[inter])
+                
+                j = j + 1
+            
+            i = i + 1
+        
+        return v
+        
     
     def test_convex(v):
         i = 0
@@ -94,9 +123,29 @@ def v_choquet(nb_crit):
         return convex
                 
     res = g_choquet(nb_crit)
+        
+    if nb_crit > 3:
+        res = convex(res)
+        
+    norm = sum(res.values())
+    
+    for key in res:
+        res[key] = res[key] / norm
+        
+    res[tuple([i + 1 for i in range(nb_crit)])] = 1
     
     while not test_convex(res):
         res = g_choquet(nb_crit)
+        
+        if nb_crit > 3:
+            res = convex(res)
+            
+        norm = sum(res.values())
+    
+        for key in res:
+            res[key] = res[key] / norm
+        
+        res[tuple([i + 1 for i in range(nb_crit)])] = 1
         
     return res
 

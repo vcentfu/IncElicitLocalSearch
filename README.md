@@ -25,7 +25,7 @@ python main.py --nb_items 20 --nb_criteria 3 --elicitation 1 --aggregator LW --s
 Pour les paramètres du problème suivants :  
 • 50 (premiers) objets  
 • 4 critères  
-• à élicitation finale (élicitation uniquement sur le dernier front de Pareto obtenu par PLS)  
+• à élicitation finale (élicitation uniquement sur le dernier front de points approximés obtenu par PLS)  
 • avec agrégateur d'intégral de Choquet  
 • avec une stratégie de questionnement de solution courante (*Current Solution Strategy*)  
 • pas d'affichage détaillé sur terminal du progression des résultats  
@@ -43,7 +43,7 @@ Pour plus de détails sur les arguments (notamment sur les agrégateurs possible
 python main.py --help
 ```  
   
-Les fichiers graph.py et results.py contiennent les programmes permettant d'obtenir tous les résultats expérimentaux pour le rapport.
+Les fichiers graph.py et results.py contiennent les programmes permettant d'obtenir tous les résultats expérimentaux pour le rapport. Ces derniers sont par ailleurs enregistrés dans le dossier logs.
 
 
 
