@@ -475,6 +475,7 @@ def elicitation(X, dm, strategy = "RANDOM", verbose = False):
             b = qu[a]
             
         nbans += 1
+        
         ans = dm.choose(Xc[a], Xc[b], verbose = verbose) 
         
         if ans:

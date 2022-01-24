@@ -53,11 +53,15 @@ if __name__ == '__main__':
         
         if args.render:
             vizualize(best_sol, objective_values_w(d, [i for i in range(len(d["i"]))])[1:], '#2ca02c', clear = False)
+            
+            if not args.verbose:
+            	print() 
+            	
             print("Please close plot window to end and get results ...")
             plt.show()
-    
-        if not args.verbose:
-            print()
+        
+        if not args.render and not args.verbose:
+        	print()
         
         print()        
         print("Model : NB_ITEMS = %d, NB_CRIT = %d, ELIT = %s, TYPE_A = %s, STRATEGY = %s" % (args.nb_items, args.nb_criteria, args.elicitation, args.aggregator, args.strategy))
@@ -79,6 +83,9 @@ if __name__ == '__main__':
         t, nbt = pls(d, ini, neighborhood, fulfill, elit = args.elicitation, deci_m = dm, strategy = args.strategy, verbose = args.verbose, render = args.render)
         last = time.process_time() - start
         
+        if not args.verbose and not args.render:
+        	print()
+        	
         print()
         print("Model : NB_ITEMS = %d, NB_CRIT = %d, ELIT = %s, TYPE_A = %s, STRATEGY = %s" % (args.nb_items, args.nb_criteria, args.elicitation, args.aggregator, args.strategy))
         print("best solution :", t.get_all_i()[-1][1:])
@@ -108,11 +115,15 @@ if __name__ == '__main__':
         
         if args.render:
             vizualize(best_sol, objective_values_w(d, [i for i in range(len(d["i"]))])[1:], '#2ca02c', clear = False)
+            
+            if not args.verbose:
+            	print()
+            	 
             print("Please close plot window to end and get results ...")
             plt.show()
-    
-        if not args.verbose:
-            print()
+        
+        if not args.render and not args.verbose:
+        	print()
         
         print()        
         print("Model : NB_ITEMS = %d, NB_CRIT = %d, ELIT = %s, TYPE_A = %s, STRATEGY = %s" % (args.nb_items, args.nb_criteria, 0, args.aggregator, args.strategy))
@@ -128,10 +139,16 @@ if __name__ == '__main__':
             print("gap :", np.abs(np.sum(np.array(om) * np.sort(best_sol[-1])) - np.sum(np.array(om) * np.sort(np.array(tv)))) / np.sum(np.array(om) * np.sort(np.array(tv))))
         elif args.aggregator == "CHOQ":
              print("gap :", np.abs(choq_integ(best_sol[-1], om) - choq_integ(tv, om)) / choq_integ(tv, om))
-             
+        
+        print() 
+        print("Execution : ELIT = 1")   
+        
         start = time.process_time()
         t, nbt = pls(d, ini, neighborhood, fulfill, elit = args.elicitation, deci_m = dm, strategy = args.strategy, verbose = args.verbose, render = args.render)
         last = time.process_time() - start
+        
+        if not args.verbose and not args.render:
+        	print()
         
         print()
         print("Model : NB_ITEMS = %d, NB_CRIT = %d, ELIT = %s, TYPE_A = %s, STRATEGY = %s" % (args.nb_items, args.nb_criteria, 1, args.aggregator, args.strategy))
