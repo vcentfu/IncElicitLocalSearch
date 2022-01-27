@@ -10,7 +10,7 @@ import time
 import numpy as np
 
 
-timeout = 10 * 60 * 60
+timeout = 5
 timeout_ac = True
 
 
@@ -109,6 +109,7 @@ def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times
 if __name__ == '__main__':
     proc = []
     args = [(25, 2), (25, 3), (25, 4), (25, 5), (25, 6), (50, 2), (50, 3), (50, 4), (50, 5), (50, 6)]
+    test_times = 20
     
     for arg in args:
         nb_items, nb_crit = arg
