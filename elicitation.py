@@ -345,7 +345,7 @@ def mmr(X, pref, type_a = "LW"):
         t.append(tv)
         qu.append(q)
     
-    return min(t), qu
+    return min(t), np.argmin(t), qu
 
 
 def om_dominance(y, X, pref, type_a = "LW"):
@@ -459,19 +459,19 @@ def elicitation(X, dm, strategy = "RANDOM", verbose = False):
     Xc = X.copy()
     nbans = 0 
     mmrp = True
-    vmmr, qu = mmr(Xc, dm.pref, type_a = dm.type_a)
+    vmmr, immr, qu = mmr(Xc, dm.pref, type_a = dm.type_a)
     tmmr = [vmmr]
     tans = [0]
     
     while len(Xc) > 1 and mmrp:
-        a = r.randint(0, len(Xc) - 1)
-        
         if strategy == "RANDOM":
+            a = r.randint(0, len(Xc) - 1)
             b = r.randint(0, len(Xc) - 1)
         
             while a == b:
                 b = r.randint(0, len(Xc) - 1)
         elif strategy == "CSS":
+            a = immr
             b = qu[a]
             
         nbans += 1
@@ -486,7 +486,7 @@ def elicitation(X, dm, strategy = "RANDOM", verbose = False):
             nbans -= 1
          
         Xc = om_filter(Xc, dm.pref, type_a = dm.type_a)
-        vmmr, qu = mmr(Xc, dm.pref, type_a = dm.type_a)
+        vmmr, immr, qu = mmr(Xc, dm.pref, type_a = dm.type_a)
         
         if vmmr <= 0:
             mmrp = False
