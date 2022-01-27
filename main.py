@@ -100,6 +100,8 @@ if __name__ == '__main__':
             print("gap :",  np.abs(np.sum(np.array(om) * np.sort(t.get_all_i()[-1][1:])) - np.sum(np.array(om) * np.sort(np.array(tv)))) / np.sum(np.array(om) * np.sort(np.array(tv))))
         elif args.aggregator == "CHOQ":
              print("gap :", np.abs(choq_integ(t.get_all_i()[-1][1:], om) - choq_integ(tv, om)) / choq_integ(tv, om))
+             
+             
     elif args.elicitation == 2:
         start = time.process_time()
         t, _ = pls(d, ini, neighborhood, fulfill, verbose = args.verbose, render = args.render, render_stop = False)

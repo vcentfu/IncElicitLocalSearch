@@ -10,7 +10,11 @@ import time
 import numpy as np
 
 
-def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times = 20):
+timeout = 10 * 60 * 60
+timeout_ac = True
+
+
+def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times = 20, start_time = 0):
     
     """ int * int * str -> 
     
@@ -25,6 +29,7 @@ def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times
     tps = [0, 0]
     anst = [0, 0]
     gap = [0, 0]   
+    occ = [0, 0]
     
     for i in range(test_times):
         ini = initial_bag(d)
@@ -55,6 +60,14 @@ def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times
         elif type_a == "CHOQ":
             gap[0] = gap[0] + np.abs(choq_integ(best_sol[-1], om) - choq_integ(tv, om)) / choq_integ(tv, om)
         
+        occ[0] = occ[0] + 1
+        
+        if timeout_ac and time.time() - start_time >= timeout:
+            if occ[1] == 0:
+                occ[1] = 1
+            
+            break
+        
         start = time.process_time()
         t, nbt = pls(d, ini, neighborhood, fulfill, elit = True, deci_m = dm, strategy = strategy)
         last = time.process_time() - start
@@ -69,17 +82,22 @@ def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times
         elif type_a == "CHOQ":
             gap[1] = gap[1] + np.abs(choq_integ(t.get_all_i()[-1][1:], om) - choq_integ(tv, om)) / choq_integ(tv, om)
         
+        occ[1] = occ[1] + 1
+        
+        if timeout_ac and time.time() - start_time >= timeout:
+            break
+        
     sob = str(nb_items)
     
     if len(sob) < 3:
         while len(sob) < 3:
             sob = "0" + sob
-            
-    tps, anst, gap = np.array(tps) / test_times, np.array(anst) / test_times, np.array(gap) / test_times
+    
+    tps, anst, gap = np.array(tps) / np.array(occ), np.array(anst) / np.array(occ), np.array(gap) / np.array(occ)
     file_name = "./logs/" + type_a + "_" + strategy + "_" + sob + "_N" + str(nb_crit) + ".log"
     f = open(file_name, "a")
-    f.write("c {0:2d} {1:7.2f} {2:4.1f} {3:4.3f}\n".format(test_times, tps[0], anst[0], gap[0]))
-    f.write("e {0:2d} {1:7.2f} {2:4.1f} {3:4.3f}\n".format(test_times, tps[1], anst[1], gap[1]))
+    f.write("c {0:2d} {1:7.2f} {2:4.1f} {3:4.3f}\n".format(occ[0], tps[0], anst[0], gap[0]))
+    f.write("e {0:2d} {1:7.2f} {2:4.1f} {3:4.3f}\n".format(occ[1], tps[1], anst[1], gap[1]))
     f.close()
     
     print()
@@ -91,38 +109,37 @@ def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times
 if __name__ == '__main__':
     proc = []
     args = [(25, 2), (25, 3), (25, 4), (25, 5), (25, 6), (50, 2), (50, 3), (50, 4), (50, 5), (50, 6)]
-    test_times = 20
-    timeout = 10 * 60 * 60
     
     for arg in args:
         nb_items, nb_crit = arg
         print("launch multiprocessing results.py for %d items %d criteria %s strategy %s aggregator" % (nb_items, nb_crit, "RANDOM", "LW"))
-        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "RANDOM", "LW", test_times,))
+        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "RANDOM", "LW", test_times, time.time()))
         proc.append(p)
         p.start()
         print("launch multiprocessing results.py for %d items %d criteria %s strategy %s aggregator" % (nb_items, nb_crit, "RANDOM", "OWA"))
-        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "RANDOM", "OWA", test_times,))
+        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "RANDOM", "OWA", test_times, time.time()))
         proc.append(p)
         p.start()
         print("launch multiprocessing results.py for %d items %d criteria %s strategy %s aggregator" % (nb_items, nb_crit, "RANDOM", "CHOQ"))
-        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "RANDOM", "CHOQ", test_times,))
+        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "RANDOM", "CHOQ", test_times, time.time()))
         proc.append(p)
         p.start()
         print("launch multiprocessing results.py for %d items %d criteria %s strategy %s aggregator" % (nb_items, nb_crit, "CSS", "LW"))
-        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "CSS", "LW", test_times,))
+        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "CSS", "LW", test_times, time.time()))
         proc.append(p)
         p.start()
         print("launch multiprocessing results.py for %d items %d criteria %s strategy %s aggregator" % (nb_items, nb_crit, "CSS", "OWA"))
-        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "CSS", "OWA", test_times,))
+        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "CSS", "OWA", test_times, time.time()))
         proc.append(p)
         p.start()
         print("launch multiprocessing results.py for %d items %d criteria %s strategy %s aggregator" % (nb_items, nb_crit, "CSS", "CHOQ"))
-        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "CSS", "CHOQ", test_times,))
+        p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "CSS", "CHOQ", test_times, time.time()))
         proc.append(p)
         p.start()
-        
+    
+    """
     start = time.time()
-    bool_list =[True] * (len(args) * 6)
+    bool_list = [True] * (len(args) * 6)
     
     while time.time() - start <= timeout:
         for i in range(len(bool_list)):
@@ -135,6 +152,7 @@ if __name__ == '__main__':
         
         for pro in proc:
             pro.terminate()
+    """
         
     for pro in proc:
         pro.join()
