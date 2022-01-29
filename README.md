@@ -43,7 +43,13 @@ Pour plus de détails sur les arguments (notamment sur les agrégateurs possible
 python main.py --help
 ```  
   
-Les fichiers graph.py et results.py contiennent les programmes permettant d'obtenir tous les résultats expérimentaux pour le rapport. Ces derniers sont par ailleurs enregistrés dans le dossier logs.
+Les fichiers graph.py et results.py contiennent les programmes permettant d'obtenir tous les résultats expérimentaux pour le rapport. Ces derniers sont par ailleurs enregistrés dans le dossier logs.  
+  
+## Résultats
 
-
+• Procédure 1 : PLS suivi d'une élicitation sur le dernier front de points  
+• Procédure 1 : PLS et élicitation incrémentale  
+  
+![Résultats](./results.png "Comparaisons entre les deux procédures selon les différents agrégateurs")
+  
 

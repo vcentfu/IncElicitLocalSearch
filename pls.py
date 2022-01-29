@@ -31,6 +31,8 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
     best_sol = None
     nbt = 0
     max_pts = objective_values_w(d, [i for i in range(len(d["i"]))])[1:]
+    temp = None
+    ac = False
         
     while len(p) != 0 or elit:
         if verbose and not elit:
@@ -85,9 +87,23 @@ def pls(d, initial_bag, neigh_func, fulfill_func, elit = False, deci_m = None, s
             p = [bX[indX]]
             res = QuadTree(p[-1], objective_values_w(d, p[-1]))
             
+            if not ac:
+                temp = sol_c
+                rest = res
+            
             if list(sol_c) == list(best_sol[-1]):
+                res = rest
                 break
             else:
+                if list(temp) == list(best_sol[-1]):
+                    break
+                
+                if ac:
+                     temp = sol_c
+                     rest = res
+                else:
+                    ac = True
+                
                 sol_c = list(best_sol[-1])
         
         if render:

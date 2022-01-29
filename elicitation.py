@@ -474,6 +474,9 @@ def elicitation(X, dm, strategy = "RANDOM", verbose = False):
             a = immr
             b = qu[a]
             
+            if a == b:
+                break
+            
         nbans += 1
         
         ans = dm.choose(Xc[a], Xc[b], verbose = verbose) 

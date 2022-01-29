@@ -68,6 +68,7 @@ def experiment(nb_items, nb_crit, strategy = "RANDOM", type_a = "LW", test_times
             
             break
         
+        
         start = time.process_time()
         t, nbt = pls(d, ini, neighborhood, fulfill, elit = True, deci_m = dm, strategy = strategy)
         last = time.process_time() - start
@@ -112,7 +113,7 @@ if __name__ == '__main__':
     test_times = 20
     
     for arg in args:
-        nb_items, nb_crit = arg
+        nb_items, nb_crit, strategy, agreg = arg # nb_items, nb_crit = arg
         print("launch multiprocessing results.py for %d items %d criteria %s strategy %s aggregator" % (nb_items, nb_crit, "RANDOM", "LW"))
         p = multiprocessing.Process(target = experiment, args = (nb_items, nb_crit, "RANDOM", "LW", test_times, time.time()))
         proc.append(p)
