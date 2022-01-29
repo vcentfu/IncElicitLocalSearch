@@ -47,8 +47,8 @@ Les fichiers graph.py et results.py contiennent les programmes permettant d'obte
   
 ## Résultats
 
-• Procédure 1 : *PLS* suivi d'une élicitation sur le dernier front de points  
-• Procédure 1 : *PLS* et élicitation incrémentale  
+• Procédure 1 : *PLS* suivi d'une élicitation sur le dernier front de points efficaces 
+• Procédure 2 : *PLS* et élicitation incrémentale  
   
 ![Résultats](./results.png "Comparaisons entre les deux procédures selon les différents agrégateurs")
   
