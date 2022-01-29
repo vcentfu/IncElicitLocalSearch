@@ -25,7 +25,7 @@ python main.py --nb_items 20 --nb_criteria 3 --elicitation 1 --aggregator LW --s
 Pour les paramètres du problème suivants :  
 • 50 (premiers) objets  
 • 4 critères  
-• à élicitation finale (élicitation uniquement sur le dernier front de points approximés obtenu par PLS)  
+• à élicitation finale (élicitation uniquement sur le dernier front de points approximés obtenu par *PLS*)  
 • avec agrégateur d'intégral de Choquet  
 • avec une stratégie de questionnement de solution courante (*Current Solution Strategy*)  
 • pas d'affichage détaillé sur terminal du progression des résultats  
@@ -47,8 +47,8 @@ Les fichiers graph.py et results.py contiennent les programmes permettant d'obte
   
 ## Résultats
 
-• Procédure 1 : PLS suivi d'une élicitation sur le dernier front de points  
-• Procédure 1 : PLS et élicitation incrémentale  
+• Procédure 1 : *PLS* suivi d'une élicitation sur le dernier front de points  
+• Procédure 1 : *PLS* et élicitation incrémentale  
   
 ![Résultats](./results.png "Comparaisons entre les deux procédures selon les différents agrégateurs")
   
