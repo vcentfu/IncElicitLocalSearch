@@ -57,4 +57,3 @@ Informations sur les résultats :
   
 ![Résultats](./results.png "Comparaisons entre les deux procédures selon les différents agrégateurs")
   
-
