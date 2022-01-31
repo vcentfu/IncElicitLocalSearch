@@ -52,7 +52,7 @@ Informations sur les résultats :
 • Procédure 1 : *PLS* suivi d'une élicitation sur le dernier front de points efficaces  
 • Procédure 2 : *PLS* et élicitation incrémentale  
 • *time in seconds*  
-• *relative gap between the near-optimum solution and the optimum solution*  
+• *relative gap between the near-optimum solution provided by elicitation and the optimum solution from the MIP*  
 • / indique que le temps d'éxécution a été trop long pour obtenir des résultats.  
   
 ![Résultats](./results.png "Comparaisons entre les deux procédures selon les différents agrégateurs")
